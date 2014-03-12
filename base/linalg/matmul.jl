@@ -266,11 +266,83 @@ end
 #       strides != 1 cases in libalg_blas.jl
 (*){T,S}(A::StridedMatrix{T}, B::StridedVector{S}) = generic_matvecmul('N', A, B)
 
-arithtype(T) = T
-arithtype(::Type{Bool}) = Int
+*(::Type{Bool},::Type{Bool}) = Bool
+*(::Type{Bool},::Type{Int}) = Int
+*(::Type{Bool},::Type{Float32}) = Float32
+*(::Type{Bool},::Type{Float64}) = Float64
+*(::Type{Bool},::Type{Complex{Float32}}) = Complex{Float32}
+*(::Type{Bool},::Type{Complex{Float64}}) = Complex{Float64}
+*(::Type{Int},::Type{Bool}) = Int
+*(::Type{Int},::Type{Int}) = Int
+*(::Type{Int},::Type{Float32}) = Float32
+*(::Type{Int},::Type{Float64}) = Float64
+*(::Type{Int},::Type{Complex{Float32}}) = Complex{Float32}
+*(::Type{Int},::Type{Complex{Float64}}) = Complex{Float64}
+*(::Type{Float32},::Type{Bool}) = Float32
+*(::Type{Float32},::Type{Int}) = Float32
+*(::Type{Float32},::Type{Float32}) = Float32
+*(::Type{Float32},::Type{Float64}) = Float64
+*(::Type{Float32},::Type{Complex{Float32}}) = Complex{Float32}
+*(::Type{Float32},::Type{Complex{Float64}}) = Complex{Float64}
+*(::Type{Float64},::Type{Bool}) = Float64
+*(::Type{Float64},::Type{Int}) = Float64
+*(::Type{Float64},::Type{Float32}) = Float64
+*(::Type{Float64},::Type{Float64}) = Float64
+*(::Type{Float64},::Type{Complex{Float32}}) = Complex{Float64}
+*(::Type{Float64},::Type{Complex{Float64}}) = Complex{Float64}
+*(::Type{Complex{Float32}},::Type{Bool}) = Complex{Float32}
+*(::Type{Complex{Float32}},::Type{Int}) = Complex{Float32}
+*(::Type{Complex{Float32}},::Type{Float32}) = Complex{Float32}
+*(::Type{Complex{Float32}},::Type{Float64}) = Complex{Float64}
+*(::Type{Complex{Float32}},::Type{Complex{Float32}}) = Complex{Float32}
+*(::Type{Complex{Float32}},::Type{Complex{Float64}}) = Complex{Float64}
+*(::Type{Complex{Float64}},::Type{Bool}) = Complex{Float64}
+*(::Type{Complex{Float64}},::Type{Int}) = Complex{Float64}
+*(::Type{Complex{Float64}},::Type{Float32}) = Complex{Float64}
+*(::Type{Complex{Float64}},::Type{Float64}) = Complex{Float64}
+*(::Type{Complex{Float64}},::Type{Complex{Float32}}) = Complex{Float64}
+*(::Type{Complex{Float64}},::Type{Complex{Float64}}) = Complex{Float64}
+*{T<:Number,S,N}(::Type{T},::Type{Array{S,N}}) = Array{T*S,N}
+
+(+)(::Type{Bool},::Type{Bool}) = Int
+(+)(::Type{Bool},::Type{Int}) = Int
+(+)(::Type{Bool},::Type{Float32}) = Float32
+(+)(::Type{Bool},::Type{Float64}) = Float64
+(+)(::Type{Bool},::Type{Complex{Float32}}) = Complex{Float32}
+(+)(::Type{Bool},::Type{Complex{Float64}}) = Complex{Float64}
+(+)(::Type{Int},::Type{Bool}) = Int
+(+)(::Type{Int},::Type{Int}) = Int
+(+)(::Type{Int},::Type{Float32}) = Float32
+(+)(::Type{Int},::Type{Float64}) = Float64
+(+)(::Type{Int},::Type{Complex{Float32}}) = Complex{Float32}
+(+)(::Type{Int},::Type{Complex{Float64}}) = Complex{Float64}
+(+)(::Type{Float32},::Type{Bool}) = Float32
+(+)(::Type{Float32},::Type{Int}) = Float32
+(+)(::Type{Float32},::Type{Float32}) = Float32
+(+)(::Type{Float32},::Type{Float64}) = Float64
+(+)(::Type{Float32},::Type{Complex{Float32}}) = Complex{Float32}
+(+)(::Type{Float32},::Type{Complex{Float64}}) = Complex{Float64}
+(+)(::Type{Float64},::Type{Bool}) = Float64
+(+)(::Type{Float64},::Type{Int}) = Float64
+(+)(::Type{Float64},::Type{Float32}) = Float64
+(+)(::Type{Float64},::Type{Float64}) = Float64
+(+)(::Type{Float64},::Type{Complex{Float32}}) = Complex{Float64}
+(+)(::Type{Float64},::Type{Complex{Float64}}) = Complex{Float64}
+(+)(::Type{Complex{Float32}},::Type{Bool}) = Complex{Float32}
+(+)(::Type{Complex{Float32}},::Type{Int}) = Complex{Float32}
+(+)(::Type{Complex{Float32}},::Type{Float32}) = Complex{Float32}
+(+)(::Type{Complex{Float32}},::Type{Float64}) = Complex{Float64}
+(+)(::Type{Complex{Float32}},::Type{Complex{Float32}}) = Complex{Float32}
+(+)(::Type{Complex{Float32}},::Type{Complex{Float64}}) = Complex{Float64}
+(+)(::Type{Complex{Float64}},::Type{Bool}) = Complex{Float64}
+(+)(::Type{Complex{Float64}},::Type{Int}) = Complex{Float64}
+(+)(::Type{Complex{Float64}},::Type{Float32}) = Complex{Float64}
+(+)(::Type{Complex{Float64}},::Type{Float64}) = Complex{Float64}
+(+)(::Type{Complex{Float64}},::Type{Complex{Float32}}) = Complex{Float64}
+(+)(::Type{Complex{Float64}},::Type{Complex{Float64}}) = Complex{Float64}
 
 function generic_matvecmul{T,S}(tA::Char, A::StridedMatrix{T}, B::StridedVector{S})
-    C = Array(promote_type(arithtype(T),arithtype(S)), size(A, tA=='N' ? 1 : 2))
+    C = Array(T*S + T*S, size(A, tA=='N' ? 1 : 2))
     generic_matvecmul(C, tA, A, B)
 end
 
@@ -323,7 +395,7 @@ end
 function generic_matmatmul{T,S}(tA, tB, A::StridedVecOrMat{T}, B::StridedMatrix{S})
     mA, nA = lapack_size(tA, A)
     mB, nB = lapack_size(tB, B)
-    C = Array(promote_type(arithtype(T),arithtype(S)), mA, nB)
+    C = Array(T*S + T*S, mA, nB)
     generic_matmatmul(C, tA, tB, A, B)
 end
 

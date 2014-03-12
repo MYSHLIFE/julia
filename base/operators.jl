@@ -143,8 +143,10 @@ At_ldiv_Bt(a,b) = transpose(a)\transpose(b)
 oftype{T}(::Type{T},c) = convert(T,c)
 oftype{T}(x::T,c) = convert(T,c)
 
-zero(x) = oftype(x,0)
-one(x)  = oftype(x,1)
+zero(x::Number) = oftype(x,0)
+zero{T<:Number}(::Type{T}) = oftype(T,0)
+one(x::Number) = oftype(x,1)
+one{T<:Number}(::Type{T})  = oftype(T,1)
 
 sizeof(T::Type) = error(string("size of type ",T," unknown"))
 sizeof(T::DataType) = if isleaftype(T) T.size else error("type does not have a native size") end
